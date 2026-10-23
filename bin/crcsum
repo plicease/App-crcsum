@@ -3,7 +3,7 @@ use 5.042;
 use lib::findbin '../lib'; # dev-only
 use App::crcsum;
 
-App::crcsum->run;
+exit App::crcsum->run(@ARGV);
 
 # PODNAME: crcsum
 # ABSTRACT: Perl port of dos-crcsum16
