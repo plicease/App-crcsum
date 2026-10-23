@@ -7,3 +7,84 @@ exit App::crcsum->run(@ARGV);
 
 # PODNAME: crcsum
 # ABSTRACT: Perl port of dos-crcsum16
+
+=head1 SYNOPSIS
+
+ crcsum [FILE]...
+ crcsum -c [MANIFEST]...
+
+=head1 DESCRIPTION
+
+Print or check CRC-32 (ZIP/Ethernet) checksums, like C<md5sum>.  This
+is a Unix port of C<dos-crcsum16>, and uses the same manifest format,
+so a manifest made on one can be checked on the other.
+
+Each file gives one line: eight lower case hex digits, a space, C<*>,
+and the file name.  With no FILE, or when FILE is C<->, standard input
+is read.
+
+  $ crcsum *.exe > crc32.sum
+  $ crcsum -c crc32.sum
+  BCOM.EXE: OK
+  TICO.EXE: OK
+
+The CRC is CRC-32/ISO-HDLC: reflected polynomial C<0xEDB88320>, initial
+value and final XOR C<0xFFFFFFFF>.  The values match Python's
+C<zlib.crc32> and the CRCs stored in ZIP files.  The plain C<cksum>
+command uses a different CRC.  CRC-32 detects accidental corruption; it
+is B<not> cryptographically secure.
+
+=head1 OPTIONS
+
+=over 4
+
+=item -c, --check
+
+Read checksums from the MANIFESTs and verify them.
+
+=item -h, -?, --help
+
+Show help.
+
+=item --version
+
+Show the version.
+
+=back
+
+=head1 MANIFESTS
+
+C<crcsum -c> reads lines of the form
+
+ <8 hex digits><space><* or space><file name>
+
+Files are opened relative to the current directory.  Manifests may use
+LF, CR LF or CR line endings, and the last line need not be terminated.
+Hex digits may be either case.  Blank lines and lines starting with
+C<#> are skipped, and a Ctrl-Z ends the manifest.  A file listed more
+than once is checked each time.
+
+Each entry prints C<OK>, C<FAILED> (wrong checksum) or C<FAILED open or
+read>.  Malformed lines and a summary of failures go to standard error;
+the remaining entries are still checked.
+
+=head1 EXIT STATUS
+
+=over 4
+
+=item C<0>
+
+Every file was read and, when checking, every checksum matched.
+
+=item C<1>
+
+A file was missing, unreadable or did not match.
+
+=item C<2>
+
+Usage error, unreadable manifest, manifest with malformed lines or no
+entries, or a write error on standard output.
+
+=back
+
+=cut
