@@ -1,5 +1,5 @@
 use Test2::V0 -no_srand => 1;
-use v5.42;
+use 5.042;
 use App::crcsum;
 use File::Temp ();
 use Cwd ();
